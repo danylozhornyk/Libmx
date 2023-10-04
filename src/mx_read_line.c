@@ -2,34 +2,53 @@
 
 int mx_read_line(char **lineptr, size_t buf_size, char delim, const int fd)
 {
-    char *buf = mx_strnew(buf_size);
-    char *str = mx_strnew(buf_size);
-    if (buf_size == 0 || buf_size > 2147483648 
-        || buf == NULL || str == NULL || fd <= 0)
+    if (lineptr == NULL || buf_size == 0 || fd < 0) 
     {
         return -2;
     }
-    size_t type;
-    while ((type = read(fd, buf, buf_size)) > 0)
+    char *buffer = (char *)mx_strnew(buf_size);
+    if (buffer == NULL) 
     {
-        mx_strcat(str, buf);
+        return -2;
     }
-    if (type < 0)
+    size_t bytes_read = 0;
+    while (true) 
     {
-        return -1;
+        char c;
+        ssize_t result = read(fd, &c, 1);
+        if (result == -1)
+        {
+            mx_strdel(&buffer);
+            return -2;
+        } 
+        else if (result == 0 && bytes_read == 0) 
+        {
+            mx_strdel(&buffer);
+            return -1;
+        } 
+        else if (result == 0 || c == delim)
+        {
+            break;
+        } 
+        else 
+        {
+            buffer[bytes_read++] = c;
+        }
+        if (bytes_read >= buf_size - 1) 
+        {
+            buf_size *= 2;
+            char *new_buffer = (char *)mx_strnew(buf_size);
+            if (new_buffer == NULL) 
+            {
+                mx_strdel(&buffer);
+                return -2;
+            }
+            mx_strncpy(new_buffer, buffer, bytes_read);
+            mx_strdel(&buffer);
+            buffer = new_buffer;
+        }
     }
-    int index = mx_get_char_index(str, delim);
-    if (index == -1)
-    {
-        *lineptr = str;
-        return -1;
-    }
-    else
-    {
-        mx_strncpy(*lineptr, str, index);
-    }
-    close(fd);
-    free(buf);
-    free(str);
-    return index;
+    buffer[bytes_read] = '\0';
+    *lineptr = buffer;
+    return bytes_read;
 }

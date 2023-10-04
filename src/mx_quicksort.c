@@ -2,35 +2,27 @@
 
 int mx_quicksort(char **arr, int left, int right)
 {
-    int i = 0;
-    int first = left;
-    int last = right;
-    if(arr == NULL)
-    {
-        return -1;
-    }
-    else if (left < right) 
-    {
-        int middle = (first + last) / 2;
-        while (first <= last) 
+    int swaps = 0;
+    if (left < right) {
+        char *last = arr[right];
+        int first = left - 1;
+        for (int j = left; j <= right - 1; j++) 
         {
-            while (mx_strlen(arr[first]) < mx_strlen(arr[middle])) 
+            if (mx_strcmp(arr[j], last) <= 0) 
             {
                 first++;
+                char temp = *arr[first];
+                *arr[first] = *arr[j];
+                *arr[j] = temp;
+                swaps++;
             }
-            while (mx_strlen(arr[last]) > mx_strlen(arr[middle])) 
-            {
-                last--;
-            }
-            char *tmp = arr[first];
-            arr[first] = arr[last];
-            arr[last] = tmp;
-            first++;
-            last--;
-            i++;
         }
-        mx_quicksort(arr, left, last);
-        mx_quicksort(arr, first, right);
+        char temp = *arr[first + 1];
+        *arr[first + 1] = *arr[right];
+        *arr[right] = temp;
+        swaps++;
+        swaps += mx_quicksort(arr, left, first);
+        swaps += mx_quicksort(arr, first + 2, right);
     }
-    return i;
+    return swaps;
 }

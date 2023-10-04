@@ -2,8 +2,12 @@
 
 char *mx_strndup(const char *s1, size_t n)
 {
-    int len = (int)n;
-    char *newstr = (char*)malloc(len);
-    mx_strncpy(newstr,s1,len);
+    size_t len = mx_strlen(s1);
+    if (n < len)
+    {
+        len = n;
+    }
+    char *newstr = mx_strnew(len);
+    mx_strncpy(newstr, s1, len);
     return newstr;
 }

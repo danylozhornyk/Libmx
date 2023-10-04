@@ -22,11 +22,19 @@ char *mx_itoa(int number)
     {
         str[0] = '-';
         number = -number;
+        for (int i = length; i > 0; i--)
+        {
+            str[i] = (number % 10) + 48 + '\0';
+            number /= 10;
+        }
     }
-    for (int i = length; i > 0; i--)
+    else
     {
-        str[i] = (number % 10) + 48 + '\0';
-        number /= 10;
+        for (int i = length - 1 ; i >= 0; i--)
+        {
+            str[i] = (number % 10) + 48 + '\0';
+            number /= 10;
+        }
     }
     return str;
 }

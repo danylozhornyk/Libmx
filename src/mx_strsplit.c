@@ -2,6 +2,10 @@
 
 char **mx_strsplit(const char *s, char c)
 {
+    if (s == NULL)
+    {
+        return NULL;
+    } 
     int amount = mx_count_words(s,c);
     char **result = (char **)malloc((amount + 1) * sizeof(char *));
     int i = 0, count = 0;

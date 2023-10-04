@@ -2,16 +2,18 @@
 
 char *mx_strtrim(const char *str)
 {
-    char* start = (char *)str;
-    char* end = (char *)(str + mx_strlen(str) - 1);
-    while (*start && mx_is_space(*start))
+    if(str == NULL)
     {
-        start++;
+        return NULL;
     }
-    while (end > start && mx_is_space(*end))
+    while (mx_is_space(*str))
     {
-        end--;
+        str++;
     }
-    *(end + 1) = '\0';
-    return start;
+    int len = mx_strlen(str);
+    while (len > 0 && mx_is_space(str[len - 1]))
+    {
+        len--;
+    }
+    return mx_strndup(str, len);
 }
